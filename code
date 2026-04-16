@@ -1,0 +1,77 @@
+int motors[3] = {13, 27, 26};
+
+// Top 3 dots of Braille 
+const int braille[26][4] = {
+  {1,0,0,1}, // A
+  {1,1,0,1}, // B
+  {1,0,0,2}, // C
+  {1,0,0,3}, // D
+  {1,0,0,4}, // E
+  {1,1,0,2}, // F
+  {1,1,0,3}, // G
+  {1,1,0,4}, // H
+  {0,1,0,1}, // I
+  {0,1,0,2}, // J
+  {1,0,1,1}, // K
+  {1,1,1,1}, // L
+  {1,0,1,2}, // M
+  {1,0,1,3}, // N
+  {1,0,1,4}, // O
+  {1,1,1,2}, // P
+  {1,1,1,3}, // Q
+  {1,1,1,4}, // R
+  {0,1,1,1}, // S
+  {0,1,1,2}, // T
+  {1,0,1,5}, // U
+  {1,1,1,5}, // V
+  {0,1,0,3}, // W
+  {1,0,1,6}, // X
+  {1,0,1,7}, // Y
+  {1,0,1,8}  // Z
+};
+
+void setup() {
+  Serial.begin(115200);  // Start serial communication
+  for(int i=0;i<3;i++){
+    pinMode(motors[i], OUTPUT);
+  }
+  Serial.println("Enter text to play:");
+}
+
+void playLetter(char letter) {
+  if(letter < 'A' || letter > 'Z') return;  // only works for uppercase
+
+  int index = letter - 'A';
+
+  // Turn ON motors based on pattern
+  for (int j=0;j<braille[index][3];j++){   // repeat based on 4th value
+    for(int i=0;i<3;i++){
+      digitalWrite(motors[i], braille[index][i]);
+    }
+    delay(200);
+    for(int i=0;i<3;i++){
+      digitalWrite(motors[i], LOW);
+    }
+    delay(100);
+  }
+
+  delay(500);  // feel time
+
+  // Turn OFF all motors
+  for(int i=0;i<3;i++){
+    digitalWrite(motors[i], LOW);
+  }
+
+  delay(400);  // gap between letters
+}
+
+void loop() {
+  if(Serial.available() > 0) {
+    String input = Serial.readStringUntil('\n'); // read input until Enter
+
+    for(int i=0; i < input.length(); i++){
+      playLetter(input[i]);  // send each char as-is
+    }
+    Serial.println("Done! Enter next text:");
+  }
+}
