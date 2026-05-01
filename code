@@ -67,7 +67,7 @@ void playLetter(char letter) {
 
 void loop() {
   if(Serial.available() > 0) {
-    String input = Serial.readStringUntil('\n'); // read input until Enter
+    String input = Serial.readStringUntil('\n'); 
 
     for(int i=0; i < input.length(); i++){
       playLetter(input[i]);  // send each char as-is
